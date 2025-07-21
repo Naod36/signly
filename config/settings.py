@@ -138,6 +138,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # ✅ This is required for 
 NPM_BIN_PATH = "C:/Program Files/nodejs/npm.cmd"
 
 STATICFILES_DIRS = [
-    BASE_DIR / "theme" / "static_src",
-    BASE_DIR / "theme" / "static",
+    BASE_DIR / 'mainApp' / 'theme' / 'static_src',  # Source files
+    BASE_DIR / 'mainApp' / 'theme' / 'static',      # Compiled CSS
 ]
