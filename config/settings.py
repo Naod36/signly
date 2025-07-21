@@ -40,7 +40,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core',
+    'tailwind',
+    'theme',
+    # 'django_browser_reload',
 ]
+
+
+TAILWIND_APP_NAME = 'theme'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -128,3 +134,10 @@ import os
 # Static files (CSS, JavaScript, etc.)
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # ✅ This is required for Render
+
+NPM_BIN_PATH = "C:/Program Files/nodejs/npm.cmd"
+
+STATICFILES_DIRS = [
+    BASE_DIR / "theme" / "static_src",
+    BASE_DIR / "theme" / "static",
+]

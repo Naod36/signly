@@ -1,0 +1,55 @@
+{% load static %}
+<link href="{% static 'css/dist/styles.css' %}" rel="stylesheet" />
+
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Signly - Sign PDFs Online</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+  </head>
+  <body class="bg-base-100 text-base-content font-sans">
+    <!-- Header -->
+    <header class="bg-white shadow-md py-4 px-6">
+      <div class="container mx-auto flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-primary">Signly</h1>
+        <nav class="space-x-4">
+          <a href="/" class="text-sm hover:underline">Home</a>
+          <a href="{% url 'upload' %}" class="text-sm hover:underline"
+            >Upload</a
+          >
+        </nav>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="min-h-screen flex items-center justify-center px-6">
+      <div class="max-w-2xl text-center">
+        <h2 class="text-4xl md:text-6xl font-bold mb-6">
+          Sign PDFs <span class="text-primary">Online</span> in Seconds
+        </h2>
+        <p class="text-lg text-gray-600 mb-8">
+          Upload your document, draw or insert your signature, and download the
+          signed version — fast and secure.
+        </p>
+        <a
+          href="{% url 'upload' %}"
+          class="btn btn-primary btn-lg px-8 py-3 shadow-md"
+        >
+          Upload PDF
+        </a>
+        <p class="text-sm text-gray-500 mt-4">Free for the first 2 documents</p>
+      </div>
+      <!-- Somewhere inside <body>, probably under the hero section -->
+      {% block content %}
+      <!-- Default homepage content here -->
+      {% endblock %}
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-100 py-6 mt-12 text-center text-sm text-gray-500">
+      &copy; {{ now|date:"Y" }} Signly. All rights reserved.
+    </footer>
+  </body>
+</html>
