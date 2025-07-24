@@ -1,0 +1,12 @@
+{% extends "theme/index.html" %} {% block content %}
+
+<p class="text-lg text-gray-600 mb-8">
+  Upload your document, draw or insert your signature, and download the signed
+  version — fast and secure.
+</p>
+<a href="{% url 'upload' %}" class="btn btn-primary btn-lg px-8 py-3 shadow-md">
+  Upload PDF
+</a>
+<p class="text-sm text-gray-500 mt-4">Free for the first 2 documents</p>
+
+{% endblock %}

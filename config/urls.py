@@ -17,11 +17,20 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from core import views
+from django.conf import settings
+from django.conf.urls.static import static
+# from core.views import serve_pdf  # Adjust this import to match where serve_pdf is actually located
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
+    # path('', include('core.urls')),
     path('upload/', views.upload, name='upload'),  # ✅ This is the missing piece
+    path('pdf/<int:pk>/', views.view_pdf, name='view_pdf'),
+    path("draw-signature/", views.draw_signature, name="draw_signature"),
+    # path('serve-pdf/<str:filename>/', serve_pdf, name='serve_pdf'),
 
-]
+
+
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

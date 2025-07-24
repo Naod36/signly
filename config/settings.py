@@ -1,5 +1,7 @@
 from pathlib import Path
 import os
+import mimetypes
+mimetypes.add_type("application/javascript", ".mjs", True)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -85,8 +87,12 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Required for `collectstatic`
 
 STATICFILES_DIRS = [
-    BASE_DIR / 'theme' / 'static',         # ✅ Where your Tailwind styles go (e.g., styles.css)
+    BASE_DIR / 'theme' / 'static',      # ✅ Where your Tailwind styles go (e.g., styles.css)
 ]
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # ✅ Enable WhiteNoise compression for production
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
