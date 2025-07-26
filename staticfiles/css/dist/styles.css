@@ -6129,6 +6129,9 @@
 .bg-primary {
   background-color: var(--color-primary);
 }
+.bg-transparent {
+  background-color: transparent;
+}
 .bg-white {
   background-color: var(--color-white);
 }

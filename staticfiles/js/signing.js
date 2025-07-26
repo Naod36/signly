@@ -1,5 +1,9 @@
 const canvas = document.getElementById("signature-pad");
 const ctx = canvas.getContext("2d");
+
+// Clear canvas to ensure transparency at start
+ctx.clearRect(0, 0, canvas.width, canvas.height);
+
 let drawing = false;
 
 canvas.addEventListener("mousedown", () => (drawing = true));

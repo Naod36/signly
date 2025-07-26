@@ -738,18 +738,13 @@ See https://github.com/adobe-type-tools/cmap-resources
 console.log("✅✅ Custom PDF signature script loaded");
 
 function waitForPDFThenInsertSignature() {
-  const maxAttempts = 30;
-  let attempts = 0;
-
-  const interval = setInterval(() => {
+  const observer = new MutationObserver((mutations, obs) => {
     const canvasWrapper = document.querySelector(".page[data-page-number='1'] .canvasWrapper");
     if (canvasWrapper) {
-      clearInterval(interval);
+      obs.disconnect(); // stop observing
       console.log("📄 PDF canvasWrapper found. Injecting signature...");
-        console.log(
-          "From viwer sessionStorage signature_path:",
-          sessionStorage.getItem("signature_path")
-        );
+      console.log("From viewer sessionStorage signature_path:", sessionStorage.getItem("signature_path"));
+
       if (!document.getElementById("signature")) {
         const img = document.createElement("img");
         img.id = "signature";
@@ -764,20 +759,24 @@ function waitForPDFThenInsertSignature() {
         img.style.cursor = "move";
         img.style.userSelect = "none";
 
-        // Ensure parent is positioned
         canvasWrapper.style.position = "relative";
         canvasWrapper.appendChild(img);
 
         enableDragging(img);
       }
-    } else {
-      attempts++;
-      if (attempts >= maxAttempts) {
-        clearInterval(interval);
-        console.warn("⚠️ PDF canvasWrapper not found after waiting.");
-      }
     }
-  }, 500);
+  });
+
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+  });
+
+  // Fallback log in case nothing is injected after 10 seconds
+  setTimeout(() => {
+    const sig = document.getElementById("signature");
+    if (!sig) console.warn("⚠️ PDF canvasWrapper or signature not found after 10s.");
+  }, 10000);
 }
 
 function enableDragging(el) {
@@ -808,6 +807,7 @@ function enableDragging(el) {
 
 document.addEventListener("DOMContentLoaded", waitForPDFThenInsertSignature);
 </script>
+
 
   </body>
 </html>
