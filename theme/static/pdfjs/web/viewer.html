@@ -738,12 +738,15 @@ See https://github.com/adobe-type-tools/cmap-resources
 console.log("✅✅ Custom PDF signature script loaded");
 
 function waitForPDFThenInsertSignature() {
-  const observer = new MutationObserver((mutations, obs) => {
+  const maxAttempts = 30;
+  let attempts = 0;
+
+  const interval = setInterval(() => {
     const canvasWrapper = document.querySelector(".page[data-page-number='1'] .canvasWrapper");
     if (canvasWrapper) {
-      obs.disconnect(); // stop observing
+      clearInterval(interval);
       console.log("📄 PDF canvasWrapper found. Injecting signature...");
-      console.log("From viewer sessionStorage signature_path:", sessionStorage.getItem("signature_path"));
+      console.log("From viwer sessionStorage signature_path:", sessionStorage.getItem("signature_path"));
 
       if (!document.getElementById("signature")) {
         const img = document.createElement("img");
@@ -759,31 +762,28 @@ function waitForPDFThenInsertSignature() {
         img.style.cursor = "move";
         img.style.userSelect = "none";
 
+        // Ensure parent is positioned
         canvasWrapper.style.position = "relative";
         canvasWrapper.appendChild(img);
 
-        enableDragging(img);
+        enableDraggingAndResizing(img);
+      }
+    } else {
+      attempts++;
+      if (attempts >= maxAttempts) {
+        clearInterval(interval);
+        console.warn("⚠️ PDF canvasWrapper not found after waiting.");
       }
     }
-  });
-
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true,
-  });
-
-  // Fallback log in case nothing is injected after 10 seconds
-  setTimeout(() => {
-    const sig = document.getElementById("signature");
-    if (!sig) console.warn("⚠️ PDF canvasWrapper or signature not found after 10s.");
-  }, 10000);
+  }, 500);
 }
 
-function enableDragging(el) {
+function enableDraggingAndResizing(el) {
   let isDragging = false;
   let offsetX = 0;
   let offsetY = 0;
 
+  // Desktop drag
   el.addEventListener("mousedown", (e) => {
     isDragging = true;
     offsetX = e.offsetX;
@@ -803,10 +803,67 @@ function enableDragging(el) {
   document.addEventListener("mouseup", () => {
     isDragging = false;
   });
+
+  // Touch drag
+  el.addEventListener("touchstart", (e) => {
+    const touch = e.touches[0];
+    const rect = el.getBoundingClientRect();
+    offsetX = touch.clientX - rect.left;
+    offsetY = touch.clientY - rect.top;
+    isDragging = true;
+
+    if (e.touches.length === 2) {
+      initialPinchDistance = getDistance(e.touches);
+      initialWidth = el.offsetWidth;
+    }
+
+    e.preventDefault();
+  }, { passive: false });
+
+  document.addEventListener("touchmove", (e) => {
+    if (e.touches.length === 2 && initialPinchDistance) {
+      const newDistance = getDistance(e.touches);
+      const scale = newDistance / initialPinchDistance;
+      el.style.width = `${initialWidth * scale}px`;
+    } else if (isDragging && e.touches.length === 1) {
+      const touch = e.touches[0];
+      const parent = el.parentElement.getBoundingClientRect();
+      const x = touch.clientX - parent.left - offsetX;
+      const y = touch.clientY - parent.top - offsetY;
+      el.style.left = `${x}px`;
+      el.style.top = `${y}px`;
+    }
+  }, { passive: false });
+
+  document.addEventListener("touchend", () => {
+    isDragging = false;
+    initialPinchDistance = null;
+  }, { passive: false });
+
+  // Mouse wheel resize (desktop)
+  el.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    let width = el.offsetWidth;
+    width += e.deltaY < 0 ? 10 : -10;
+    width = Math.max(50, Math.min(600, width)); // Clamp size
+    el.style.width = `${width}px`;
+  });
+
+  // Helpers for pinch
+  let initialPinchDistance = null;
+  let initialWidth = null;
+
+  function getDistance(touches) {
+    const [a, b] = touches;
+    const dx = a.clientX - b.clientX;
+    const dy = a.clientY - b.clientY;
+    return Math.hypot(dx, dy);
+  }
 }
 
 document.addEventListener("DOMContentLoaded", waitForPDFThenInsertSignature);
 </script>
+
 
 
   </body>
